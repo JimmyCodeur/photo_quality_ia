@@ -8,6 +8,7 @@ Ce projet est un système permettant d'évaluer automatiquement la qualité des 
 - 📊 **Critères évalués** : netteté, exposition, composition, etc.
 - 🔧 **Interface simple et intuitive** avec Streamlit
 - 🐳 **Déploiement facile avec Docker & Docker Compose**
+- 🧠 **Module 1 : Analyse de qualité avec OpenCV**
 
 ## 📂 Structure du projet
 ```
@@ -16,7 +17,7 @@ photo_quality_ai/
 │   ├── app/
 │   │   ├── main.py     # Serveur FastAPI
 │   │   ├── models.py   # Modèles ML
-│   │   ├── utils.py    # Fonctions de traitement d'image
+│   │   ├── image_analysis.py    # Fonctions de traitement d'image via opencv
 │   │   ├── requirements.txt
 │   ├── Dockerfile
 ├── frontend/           # Interface Streamlit pour l'upload et l'affichage
