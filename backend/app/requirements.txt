@@ -4,6 +4,6 @@ python-multipart
 opencv-python-headless
 pillow
 numpy
-transformers
 torch
-ollama
+pyiqa
+
