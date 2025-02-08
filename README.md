@@ -1,40 +1,42 @@
-# 📷 Système d'Analyse de Qualité des Photos de Monuments
+### 📷 **Système d'Analyse de Qualité des Photos de Monuments**
 
-Ce projet est un système permettant d'évaluer automatiquement la qualité des photos de monuments en analysant différents critères comme la netteté, l'exposition et la composition.
+Ce projet est un système permettant d'évaluer automatiquement la qualité des photos de monuments en analysant différents critères.
 
-## 🚀 Fonctionnalités
+## 🚀 **Fonctionnalités**
 - 📸 **Upload d'images** via une interface Streamlit
-- 🖼️ **Analyse automatique** de la qualité des images avec FastAPI
-- 📊 **Critères évalués** : netteté, exposition, composition, etc.
+- 🎨 **Analyse automatique** de la qualité des images avec FastAPI
+- 📊 **Critères évalués** : netteté, bruit, composition, score de qualité global
+- 🧠 **Module 1 : Analyse de qualité avec OpenCV**
+- 🤖 **Module 2 : Évaluation de la qualité avec NIMA (Neural Image Assessment)**
 - 🔧 **Interface simple et intuitive** avec Streamlit
 - 🐳 **Déploiement facile avec Docker & Docker Compose**
-- 🧠 **Module 1 : Analyse de qualité avec OpenCV**
 
-## 📂 Structure du projet
+## 📂 **Structure du projet**
 ```
 photo_quality_ai/
-├── backend/            # API FastAPI pour analyser les images
+├── backend/          
 │   ├── app/
-│   │   ├── main.py     # Serveur FastAPI
-│   │   ├── models.py   # Modèles ML
-│   │   ├── image_analysis.py    # Fonctions de traitement d'image via opencv
+│   │   ├── main.py    
+│   │   ├── models_config.py   
+│   │   ├── image_analysis.py    
 │   │   ├── requirements.txt
 │   ├── Dockerfile
-├── frontend/           # Interface Streamlit pour l'upload et l'affichage
+├── frontend/          
 │   ├── app.py
 │   ├── requirements.txt
 │   ├── Dockerfile
-├── docker-compose.yml  # Orchestration des services
+├── docker-compose.yml 
 ├── .gitignore
 ├── README.md
 ```
 
-## 🛠️ Installation et Exécution
+## 🛠️ **Installation et Exécution**
 
-### 📦 Prérequis
+### 📦 **Prérequis**
 - [Docker](https://www.docker.com/) et [Docker Compose](https://docs.docker.com/compose/)
+- **Python 3.8+** si vous exécutez sans Docker
 
-### 🔧 Lancer l'application
+### 🔧 **Lancer l'application avec Docker**
 Dans le terminal, exécutez :
 ```bash
 docker-compose up --build
@@ -43,41 +45,45 @@ Cela va :
 - Construire et démarrer le **backend (FastAPI)** sur `http://localhost:8000`
 - Construire et démarrer le **frontend (Streamlit)** sur `http://localhost:8501`
 
-### 📂 Arrêter les conteneurs
+### 📂 **Arrêter les conteneurs**
 ```bash
 docker-compose down
 ```
 
-## 🖼️ Utilisation
+## 🎨 **Utilisation**
 1. **Accédez à l'interface Streamlit** : [http://localhost:8501](http://localhost:8501)
 2. **Chargez une image** (formats supportés : `.jpg`, `.jpeg`, `.png`)
-3. **Obtenez une analyse de la qualité** avec des recommandations
+3. **Choisissez une méthode d'analyse** :
+   - **OpenCV** : Analyse du flou et du bruit dans l'image
+   - **NIMA** : Évaluation du score de qualité de l'image
+4. **Obtenez une analyse complète** avec des recommandations
 
-## 🔍 Développement
-Si vous souhaitez exécuter les services manuellement sans Docker :
+## 🔍 **Développement**
+Si vous souhaitez exécuter les services **manuellement** sans Docker :
 
-### 1️⃣ Démarrer le backend (FastAPI)
+### 1️⃣ **Démarrer le backend (FastAPI)**
 ```bash
 cd backend/app
 pip install -r requirements.txt
 uvicorn main:app --host 0.0.0.0 --port 8000
 ```
 
-### 2️⃣ Démarrer le frontend (Streamlit)
+### 2️⃣ **Démarrer le frontend (Streamlit)**
 ```bash
 cd frontend
 pip install -r requirements.txt
 streamlit run app.py --server.port 8501 --server.address 0.0.0.0
 ```
 
-## ✨ Améliorations possibles
-- 🤖 Amélioration du modèle d'analyse avec du Machine Learning
-- 📊 Ajout de graphiques pour une meilleure visualisation des résultats
-- 🔍 Optimisation des performances
+## ✨ **Améliorations possibles**
+- 🧠 **Intégration de modèles d'intelligence artificielle avancés**
+- 📊 **Ajout de graphiques et visualisations pour une meilleure interprétation**
+- 🔍 **Amélioration des performances de traitement des images**
+- 🛠️ **Déploiement sur un serveur cloud pour une utilisation en ligne**
 
-## 📝 Licence
+## 📝 **Licence**
 Ce projet est sous licence MIT - voir le fichier [LICENSE](LICENSE) pour plus de détails.
 
 ---
 
-🚀 **Créé avec ❤️ par Jimmy**
+🚀 **Créé avec ❤️ par Jimmy** 🎉
