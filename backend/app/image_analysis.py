@@ -18,7 +18,6 @@ def detect_noise(image_path):
     score = float(min(1.0, 100 / (noise + 1)))
     return ("Beaucoup de bruit", score) if noise > 100 else ("Faible bruit", score)
 
-
 def validate_image(image_path):
     """Vérifie si une image est bien chargée et exploitable."""
     img = cv2.imread(image_path)
