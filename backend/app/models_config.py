@@ -2,12 +2,13 @@ import pyiqa
 import torch
 
 PYIQA_MODELS = {
-    "NIMA (VGG16-AVA)": "nima-vgg16-ava"
+    "NIMA (VGG16-AVA)": "nima-vgg16-ava",
+    "LIQE (No-Reference)": "liqe"
 }
 
-def load_nima_pyiqa():
+def load_pyiqa_model(model_name):
+    """Charge un modèle PyIQA donné."""
     device = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
-    nima_model = pyiqa.create_metric(PYIQA_MODELS["NIMA (VGG16-AVA)"], device=device)
-    return nima_model
+    return pyiqa.create_metric(model_name, device=device)
 
-NIMA_MODEL = load_nima_pyiqa()
+PYIQA_INSTANCES = {name: load_pyiqa_model(model) for name, model in PYIQA_MODELS.items()}

@@ -2,84 +2,138 @@ import streamlit as st
 import requests
 from PIL import Image
 
-st.set_page_config(page_title="Analyse IA des Photos", page_icon="📷", layout="centered")
+# 🎨 Configuration générale
+st.set_page_config(
+    page_title="Analyse IA des Photos 📸",
+    page_icon="📷",
+    layout="wide"
+)
 
+# 🎨 CSS Custom pour le style
+st.markdown(
+    """
+    <style>
+    .title {
+        text-align: center;
+        font-size: 40px;
+        font-weight: bold;
+        color: #ff4b4b;
+    }
+    .upload-box {
+        border: 2px dashed #ff4b4b;
+        padding: 20px;
+        text-align: center;
+        background-color: #fff3f3;
+        border-radius: 10px;
+    }
+    .stButton > button {
+        background-color: #ff4b4b !important;
+        color: white !important;
+        border-radius: 8px !important;
+        font-size: 18px !important;
+        padding: 10px 20px !important;
+    }
+    .stProgress > div > div {
+        border-radius: 10px;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True
+)
+
+# 🎯 TITRE PRINCIPAL
 st.markdown("<h1 class='title'>📸 Analyse de la Qualité des Photos</h1>", unsafe_allow_html=True)
 
-models_response = requests.get("http://backend:8000/models/")
-if models_response.status_code == 200:
-    models_data = models_response.json()
-else:
-    st.error("❌ Impossible de récupérer les modèles disponibles.")
-    models_data = {"huggingface_models": [], "ollama_models": []}
+# 📌 Définition des modèles avec descriptions
+ANALYSIS_MODELS = {
+    "OpenCV (Module 1)": "Détection du flou avec OpenCV.",
+    "NIMA (Module 2)": "NIMA (Neural Image Assessment) analyse l'esthétique perçue de la photo.",
+    "LIQE (Module 3)": "Évaluation de la qualité technique avec LIQE."
+}
 
-analysis_methods = ["OpenCV (Module 1)", "NIMA (Module 2)"]
+# 📌 Sélection du module dans la barre latérale
+st.sidebar.title("🔍 Paramètres d'analyse")
+analysis_type = st.sidebar.radio("Sélectionnez une méthode :", list(ANALYSIS_MODELS.keys()))
 
-analysis_type = st.selectbox("🔍 Choisissez une méthode d'analyse", analysis_methods)
+# 📌 Affichage de la description du module sélectionné
+st.sidebar.markdown("### ℹ️ Description du Modèle")
+st.sidebar.write(ANALYSIS_MODELS[analysis_type])
 
-st.markdown("<div class='upload-box'>", unsafe_allow_html=True)
-uploaded_file = st.file_uploader("📤 Téléversez une image", type=["jpg", "jpeg", "png"])
-st.markdown("</div>", unsafe_allow_html=True)
+# 📂 Téléversement de l’image
+st.write("### 📂 Téléversez une image")
+uploaded_file = st.file_uploader("", type=["jpg", "jpeg", "png"])
 
 if uploaded_file:
+    # 🎨 Affichage de l’image téléchargée
     image = Image.open(uploaded_file)
     st.image(image, caption="🖼️ Image Téléversée", use_container_width=True)
 
     files = {"file": uploaded_file.getvalue()}
 
-    if analysis_type == "OpenCV (Module 1)":
-        response = requests.post("http://backend:8000/analyze/opencv/", files=files)
+    if st.button("🚀 Lancer l'analyse"):
+        with st.spinner("Analyse en cours... ⏳"):
+            # 📡 Requête API selon le modèle sélectionné
+            if analysis_type == "OpenCV (Module 1)":
+                response = requests.post("http://backend:8000/analyze/opencv/", files=files)
+            elif analysis_type == "NIMA (Module 2)":
+                response = requests.post("http://backend:8000/analyze/nima/", files=files)
+            elif analysis_type == "LIQE (Module 3)":
+                response = requests.post("http://backend:8000/analyze/liqe/", files=files)
 
-    elif analysis_type == "NIMA (Module 2)":
-        response = requests.post("http://backend:8000/analyze/nima/", files=files)
+            # 📌 Gestion de la réponse API
+            if response.status_code == 200:
+                result = response.json()
+                st.success("✅ Analyse réussie !")
 
-    if response.status_code == 200:
-        result = response.json()
-        st.success("✅ Analyse réussie !")
+                st.write("📊 **Données API reçues :**", result)
+                st.write("### 📊 Résultats de l'analyse")
 
-        st.write("📊 **Données API reçues :**", result)
-        st.write("### 📊 Résultats de l'analyse")
+                # 📌 Résultat pour OpenCV
+                if analysis_type == "OpenCV (Module 1)":
+                    if "results" in result:
+                        for item in result["results"]:
+                            st.write(f"**{item['label']}** (Score: {item['score']:.2f}%)")
 
-        if analysis_type == "OpenCV (Module 1)":
-            if "results" in result:
-                for item in result["results"]:
-                    st.write(f"**{item['label']}** (Score: {item['score']:.2f}%)")
+                    if "quality_score" in result:
+                        try:
+                            quality_score_percentage = float(result["quality_score"].replace('%', ''))
+                            st.progress(int(round(quality_score_percentage)))
+                            st.write(f"### 📌 **Score de qualité de l'image : {quality_score_percentage:.2f}%**")
 
-            if "quality_score" in result:
-                try:
-                    quality_score = float(result["quality_score"].replace('%', ''))
-                    quality_score = min(100, max(0, quality_score))
-                    st.progress(int(round(quality_score)))
-                    st.write(f"### 📌 Score de qualité de l'image : **{quality_score:.2f}**")
+                        except ValueError:
+                            st.error("⚠️ Erreur : Impossible de convertir le score de qualité.")
 
-                    if quality_score >= 70:
-                        st.success("🟢 L'image est **de bonne qualité** ✅")
-                    elif 40 <= quality_score < 70:
-                        st.warning("🟠 L'image est **moyenne** ⚠️")
-                    else:
-                        st.error("🔴 L'image est **de mauvaise qualité** ❌")
+                # 📌 Résultat pour NIMA (Module 2) avec seuil de qualité à 5.0
+                elif analysis_type == "NIMA (Module 2)":
+                    if "quality_score" in result:
+                        try:
+                            quality_score = float(result["quality_score"])
+                            quality_score_percentage = quality_score * 10  # Conversion en pourcentage
 
-                except ValueError:
-                    st.error("⚠️ Erreur : Impossible de convertir le score de qualité.")
+                            st.progress(int(round(quality_score_percentage)))
+                            st.write(f"### 📌 **Score de qualité esthétique de l'image : {quality_score_percentage:.2f}%**")
 
-        elif analysis_type == "NIMA (Module 2)":
-            if "quality_score" in result:
-                try:
-                    quality_score = float(result["quality_score"])
-                    st.write(f"### 📌 Score de qualité de l'image : **{quality_score:.2f}**")
+                            # Ajout de l'évaluation
+                            if quality_score >= 5.0:
+                                st.success("🟢 **L'image est de bonne qualité esthétique !** ✅")
+                            else:
+                                st.error("🔴 **L'image est de mauvaise qualité esthétique !** ❌")
 
-                    if quality_score >= 5.5:
-                        st.success("🟢 L'image est **de bonne qualité** ✅")
-                    elif 5.0 <= quality_score < 5.5:
-                        st.warning("🟠 L'image est **moyenne** ⚠️")
-                    else:
-                        st.error("🔴 L'image est **de mauvaise qualité** ❌")
+                        except ValueError:
+                            st.error("⚠️ Erreur : Impossible de convertir le score de qualité.")
 
-                except ValueError:
-                    st.error("⚠️ Erreur : Impossible de convertir le score de qualité.")
+                # 📌 Résultat pour LIQE (Module 3)
+                elif analysis_type == "LIQE (Module 3)":
+                    if "quality_score" in result:
+                        try:
+                            quality_score = float(result["quality_score"])
+                            quality_score_percentage = quality_score * 10  # Conversion en pourcentage
+
+                            st.progress(int(round(quality_score_percentage)))
+                            st.write(f"### 📌 **Score de qualité technique de l'image : {quality_score_percentage:.2f}%**")
+
+                        except ValueError:
+                            st.error("⚠️ Erreur : Impossible de convertir le score de qualité.")
 
             else:
-                st.warning("⚠️ Aucune donnée de qualité reçue du backend.")
-
-    else:
-        st.error(f"❌ Erreur lors de l'analyse : {response.status_code}")
+                st.error(f"❌ Erreur lors de l'analyse : {response.status_code}")
