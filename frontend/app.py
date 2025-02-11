@@ -1,11 +1,24 @@
 import streamlit as st
 import requests
-from PIL import Image
+from PIL import Image, UnidentifiedImageError
+import io
+
+BACKEND_URL = "http://backend:8000"
 
 st.set_page_config(
     page_title="Analyse IA des Photos 📸",
     page_icon="📷",
     layout="wide"
+)
+
+# ===================================================
+# 🎛️ MENU DE NAVIGATION
+# ===================================================
+st.sidebar.title("📌 Navigation")
+module = st.sidebar.radio(
+    "Sélectionnez un module d'analyse",
+    ["Module 1 - OpenCV", "Module 2 - NIMA (esthétique)", "Module 3 - LIQE (Technique)", 
+     "Module 4 - GPT", "Module 5 - Analyse Combinée"]
 )
 
 st.markdown(
@@ -17,23 +30,6 @@ st.markdown(
         font-weight: bold;
         color: #ff4b4b;
     }
-    .upload-box {
-        border: 2px dashed #ff4b4b;
-        padding: 20px;
-        text-align: center;
-        background-color: #fff3f3;
-        border-radius: 10px;
-    }
-    .stButton > button {
-        background-color: #ff4b4b !important;
-        color: white !important;
-        border-radius: 8px !important;
-        font-size: 18px !important;
-        padding: 10px 20px !important;
-    }
-    .stProgress > div > div {
-        border-radius: 10px;
-    }
     </style>
     """,
     unsafe_allow_html=True
@@ -41,96 +37,104 @@ st.markdown(
 
 st.markdown("<h1 class='title'>📸 Analyse de la Qualité des Photos</h1>", unsafe_allow_html=True)
 
-ANALYSIS_MODELS = {
-    "OpenCV (Module 1)": "Détection du flou avec OpenCV.",
-    "NIMA (Module 2)": "NIMA (Neural Image Assessment) analyse l'esthétique perçue de la photo.",
-    "LIQE (Module 3)": "Évaluation de la qualité technique avec LIQE.",
-    "GPT-4o (Module 4)": "Analyse avancée IA avec OpenAI (Note finale et commentaire IA)."
-}
+# ===================================================
+# 🟢 MODULES 1, 2 & 3 - ANALYSE PAR UPLOAD UNIQUEMENT
+# ===================================================
+if module in ["Module 1 - OpenCV", "Module 2 - NIMA (esthétique)", "Module 3 - LIQE (Technique)"]:
+    st.markdown(f"<h2 style='color: #007BFF;'>🖼️ {module}</h2>", unsafe_allow_html=True)
+    
+    uploaded_file = st.file_uploader("📤 Téléversez une image :", type=["jpg", "jpeg", "png"])
+    image_bytes = None
+    image = None
 
-st.sidebar.title("🔍 Paramètres d'analyse")
-analysis_type = st.sidebar.radio("Sélectionnez une méthode :", list(ANALYSIS_MODELS.keys()))
+    if uploaded_file:
+        try:
+            image = Image.open(uploaded_file)
+            img_buffer = io.BytesIO()
+            image.convert("RGB").save(img_buffer, format="JPEG", quality=100)
+            image_bytes = img_buffer.getvalue()
+        except UnidentifiedImageError:
+            st.error("❌ Erreur : L'image téléversée est invalide ou corrompue.")
 
-st.sidebar.markdown("### ℹ️ Description du Modèle")
-st.sidebar.write(ANALYSIS_MODELS[analysis_type])
+    if st.button(f"🚀 Lancer l'analyse ({module})"):
+        if image_bytes is None:
+            st.error("❌ Aucune image n'a été chargée. Veuillez téléverser une image.")
+        else:
+            with st.spinner("🔎 Analyse en cours..."):
+                files = {"file": ("image.jpg", image_bytes, "image/jpeg")}
+                endpoint = "/analyze/opencv/" if module == "Module 1 - OpenCV" else "/analyze/nima/" if module == "Module 2 - NIMA" else "/analyze/liqe/"
+                response = requests.post(f"{BACKEND_URL}{endpoint}", files=files)
 
-st.write("### 📂 Téléversez une image")
-uploaded_file = st.file_uploader("", type=["jpg", "jpeg", "png"])
+                if response.status_code == 200:
+                    result = response.json()
+                    st.success("✅ Analyse réussie !")
+                    st.write("📊 **Données API reçues :**", result)
+                else:
+                    st.error(f"❌ Erreur lors de l'analyse : {response.status_code}")
 
-if uploaded_file:
-    image = Image.open(uploaded_file)
-    st.image(image, caption="🖼️ Image Téléversée", use_container_width=True)
+# ===================================================
+# 🔵 MODULE 4 - ANALYSE PAR URL UNIQUEMENT
+# ===================================================
+elif module == "Module 4 - GPT":
+    st.markdown("<h2 style='color: #007BFF;'>🌍 Analyse basée sur une URL d'image</h2>", unsafe_allow_html=True)
 
-    files = {"file": uploaded_file.getvalue()}
+    MEMORIZED_IMAGES = {
+        "Statue De La Liberté": "https://i.postimg.cc/0yXGbvM7/a5e07ffa35.jpg",
+        "Tour Eiffel": "https://i.postimg.cc/Cxt8KxBD/tower-103417-1280.jpg"
+    }
 
-    if st.button("🚀 Lancer l'analyse"):
-        with st.spinner("Analyse en cours... ⏳"):
-            if analysis_type == "OpenCV (Module 1)":
-                response = requests.post("http://backend:8000/analyze/opencv/", files=files)
-            elif analysis_type == "NIMA (Module 2)":
-                response = requests.post("http://backend:8000/analyze/nima/", files=files)
-            elif analysis_type == "LIQE (Module 3)":
-                response = requests.post("http://backend:8000/analyze/liqe/", files=files)
-            elif analysis_type == "GPT-4o (Module 4)":
-                response = requests.post("http://backend:8000/analyze/openia-solo/", files=files)
+    st.markdown("### 📌 Images mémorisées (à titre informatif)")
+    for name, url in MEMORIZED_IMAGES.items():
+        st.markdown(f"🔗 **{name}** : [{url}]({url})")
 
-            if response.status_code == 200:
-                result = response.json()
-                st.success("✅ Analyse réussie !")
+    image_url_4 = st.text_input("🌐 Entrez une URL d'image personnalisée :")
 
-                st.write("📊 **Données API reçues :**", result)
-                st.write("### 📊 Résultats de l'analyse")
+    if st.button("🚀 Lancer l'analyse (Module 4)"):
+        if not image_url_4:
+            st.error("❌ Veuillez entrer une URL d'image valide.")
+        else:
+            with st.spinner("🔎 Analyse en cours..."):
+                response = requests.post(f"{BACKEND_URL}/analyze/openia-solo/", data={"image_url": image_url_4})
 
-                if analysis_type == "OpenCV (Module 1)":
-                    if "results" in result:
-                        for item in result["results"]:
-                            st.write(f"**{item['label']}** (Score: {item['score']:.2f}%)")
+                if response.status_code == 200:
+                    result = response.json()
+                    st.success("✅ Analyse réussie !")
+                    st.write("📊 **Données API reçues :**", result)
+                else:
+                    st.error(f"❌ Erreur lors de l'analyse : {response.status_code}")
 
-                    if "quality_score" in result:
-                        try:
-                            quality_score_percentage = float(result["quality_score"].replace('%', ''))
-                            st.progress(int(round(quality_score_percentage)))
-                            st.write(f"### 📌 **Score de qualité de l'image : {quality_score_percentage:.2f}%**")
+# ===================================================
+# 🔵 MODULE 5 - ANALYSE COMBINÉE AVEC URL & UPLOAD
+# ===================================================
+elif module == "Module 5 - Analyse Combinée":
+    st.markdown("<h2 style='color: #007BFF;'>📂 Analyse combinée avec image téléversée + URL</h2>", unsafe_allow_html=True)
 
-                        except ValueError:
-                            st.error("⚠️ Erreur : Impossible de convertir le score de qualité.")
+    uploaded_file_5 = st.file_uploader("📤 Téléversez une image :", type=["jpg", "jpeg", "png"])
+    image_url_5 = st.text_input("🌐 Entrez une URL d'image personnalisée :")
 
-                elif analysis_type == "NIMA (Module 2)":
-                    if "quality_score" in result:
-                        try:
-                            quality_score = float(result["quality_score"])
-                            quality_score_percentage = quality_score * 10 
+    image_bytes_5 = None
+    image_5 = None
 
-                            st.progress(int(round(quality_score_percentage)))
-                            st.write(f"### 📌 **Score de qualité esthétique de l'image : {quality_score_percentage:.2f}%**")
+    if uploaded_file_5:
+        try:
+            image_5 = Image.open(uploaded_file_5)
+            img_buffer = io.BytesIO()
+            image_5.convert("RGB").save(img_buffer, format="JPEG", quality=100)
+            image_bytes_5 = img_buffer.getvalue()
+        except UnidentifiedImageError:
+            st.error("❌ Erreur : L'image téléversée est invalide ou corrompue.")
 
-                            if quality_score >= 5.0:
-                                st.success("🟢 **L'image est de bonne qualité esthétique !** ✅")
-                            else:
-                                st.error("🔴 **L'image est de mauvaise qualité esthétique !** ❌")
+    if st.button("🚀 Lancer l'analyse (Module 5)"):
+        if not image_url_5 or image_bytes_5 is None:
+            st.error("❌ Veuillez téléverser une image et entrer une URL valide.")
+        else:
+            with st.spinner("🔎 Analyse en cours..."):
+                files = {"file": ("image.jpg", image_bytes_5, "image/jpeg")}
+                response = requests.post(f"{BACKEND_URL}/analyze/4-combined/", data={"image_url": image_url_5}, files=files)
 
-                        except ValueError:
-                            st.error("⚠️ Erreur : Impossible de convertir le score de qualité.")
-
-                elif analysis_type == "LIQE (Module 3)":
-                    if "quality_score" in result:
-                        try:
-                            quality_score = float(result["quality_score"])
-                            quality_score_percentage = quality_score * 10 
-
-                            st.progress(int(round(quality_score_percentage)))
-                            st.write(f"### 📌 **Score de qualité technique de l'image : {quality_score_percentage:.2f}%**")
-
-                        except ValueError:
-                            st.error("⚠️ Erreur : Impossible de convertir le score de qualité.")
-
-                elif analysis_type == "GPT-4o (Module 4)":
-                    if "final_analysis" in result:
-                        st.subheader("🤖 Analyse IA")
-                        st.write(result["final_analysis"])
-                    else:
-                        st.warning("⚠️ L'analyse IA n'a pas pu être complétée.")
-
-            else:
-                st.error(f"❌ Erreur lors de l'analyse : {response.status_code}")
-
+                if response.status_code == 200:
+                    result = response.json()
+                    st.success("✅ Analyse réussie !")
+                    st.write("📊 **Données API reçues :**", result)
+                else:
+                    st.error(f"❌ Erreur lors de l'analyse : {response.status_code}")

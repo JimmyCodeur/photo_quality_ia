@@ -2,12 +2,17 @@ import cv2
 import numpy as np
 
 def detect_blur(image_path):
-    """Détecte si une image est floue en utilisant la variance du Laplacien."""
+    """Détecte si une image est floue avec la variance du Laplacien."""
     image = cv2.imread(image_path, cv2.IMREAD_GRAYSCALE)
     if image is None:
         return "Erreur: Image non chargée", 0.0
+
     laplacian_var = cv2.Laplacian(image, cv2.CV_64F).var()
-    return ("Flou", float(laplacian_var / 500)) if laplacian_var < 100 else ("Net", min(float(laplacian_var / 500), 1.0))
+
+    blur_score = min(float(laplacian_var / 500), 1.0) 
+    clarity = "Net" if blur_score >= 0.5 else "Flou"
+
+    return clarity, (1 - blur_score) 
 
 def detect_noise(image_path):
     """Détecte le bruit numérique dans l'image en mesurant la variance des pixels."""
