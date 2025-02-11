@@ -10,6 +10,7 @@ Ce projet est un système permettant d'évaluer automatiquement la qualité des 
 - 🤖 **Module 2 : Évaluation de la qualité avec NIMA (Neural Image Assessment)**
 - 🤖 **Module 3 : Évaluation de la qualité avec LIQE**
 - 🌟 **Module 4 : Analyse avancée avec GPT-4o (OpenAI) pour une note et un avis IA**
+- 🌟 **Module 5 : Analyse combinée (OpenCV + NIMA + LIQE) avec IA (GPT-4o)** 
 - 🔧 **Interface simple et intuitive** avec **Streamlit**
 - 🐳 **Déploiement facile avec Docker & Docker Compose**
 
@@ -68,6 +69,7 @@ docker-compose down
    - **Module 2 (NIMA)** : Évaluation de la qualité esthétique de l'image
    - **Module 3 (LIQE)** : Évaluation du score de qualité technique de l'image
    - **Module 4 (GPT-4o-mini - OpenAI)** : Analyse IA avancée, note finale et avis détaillé
+   - **Module 5 (Analyse combinée - OpenCV + NIMA + LIQE + GPT-4o)** : Analyse complète avec IA
 
 4. **Obtenez une analyse complète** avec des recommandations
 
@@ -93,6 +95,12 @@ docker-compose down
 - OpenAI examine l'image et les scores des autres modules
 - **Note finale sur 100** et **avis détaillé**
 - Recommandations pour améliorer la qualité de l'image
+
+### **🌟 Module 5 : Analyse combinée**
+- Combinaison des modules 1, 2 et 3
+- Analyse approfondie de la qualité visuelle et technique
+- Intégration de **l'IA GPT** pour un avis final
+- Note finale fournie par OpenAI (sur 100)
 
 ---
 
