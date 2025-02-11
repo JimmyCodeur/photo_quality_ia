@@ -289,7 +289,7 @@ async def analyze_with_gpt(file: UploadFile = File(...), image_url: str = Form(.
         """
 
         response = openai_client.chat.completions.create(
-            model="gpt-4o",
+            model="gpt",
             messages=[
                 {"role": "system", "content": "Tu es un expert en analyse d'images et en qualité visuelle."},
                 {"role": "user", "content": [

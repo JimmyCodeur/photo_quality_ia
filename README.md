@@ -1,6 +1,6 @@
 # 📷 **Système d'Analyse de Qualité des Photos de Monuments**
 
-Ce projet est un système permettant d'évaluer automatiquement la qualité des photos de monuments en analysant différents critères.
+Ce projet est un système permettant d'évaluer automatiquement la qualité des photos de monuments en analysant différents critères avec IA.
 
 ## 🚀 **Fonctionnalités**
 - 🎨 **Upload d'images** via une interface **Streamlit**
@@ -24,11 +24,13 @@ photo_quality_ai/
 │   │   ├── models_config.py   
 │   │   ├── image_analysis.py    
 │   │   ├── requirements.txt
+│   │   ├── encode_image.py
 │   ├── Dockerfile
 ├── frontend/          
 │   ├── app.py
 │   ├── requirements.txt
 │   ├── Dockerfile
+│   │── encode_image_base64.py
 ├── docker-compose.yml
 ├── .gitignore
 ├── README.md
@@ -84,7 +86,7 @@ docker-compose down
 ### **🔧 Module 3 : LIQE (Qualité Technique)**
 - Analyse de la **qualité technique de l'image**
 - Détection de **défauts visuels** sans référence
-- Score sur **10** (Bonne qualité si **≥ 5**)
+- Bonne qualité si **≥ 5**
 
 ### **🤖 Module 4 : Analyse IA avec GPT-4o (OpenAI)**
 - Analyse avancée basée sur l'**intelligence artificielle**
@@ -110,14 +112,6 @@ cd frontend
 pip install -r requirements.txt
 streamlit run app.py --server.port 8501 --server.address 0.0.0.0
 ```
-
----
-
-## ✨ **Améliorations possibles**
-- 🧠 **Intégration d'autres modèles d'intelligence artificielle avancés**
-- 📊 **Ajout de graphiques et visualisations pour une meilleure interprétation**
-- 🔍 **Amélioration des performances de traitement des images**
-- 🔧 **Déploiement sur un serveur cloud pour une utilisation en ligne**
 
 ---
 
