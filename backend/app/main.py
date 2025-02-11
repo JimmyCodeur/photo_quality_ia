@@ -3,6 +3,7 @@ import torch
 import openai
 import os
 import io
+import re
 from fastapi import FastAPI, UploadFile, File, Form
 from fastapi.responses import JSONResponse, FileResponse
 from PIL import Image
@@ -126,7 +127,7 @@ async def analyze_gpt4o(image_url: str = Form(...)):
         Donne une note finale basée sur ces critères. 
 
         🔹 **Résumé en une phrase** : 
-        Décris brièvement la qualité de l'image en fonction de ton analyse et ce qui est présent sur l'image.
+        Décris en 1 phrase ce que tu vois dans l'image.
         """
 
         response = openai_client.chat.completions.create(
@@ -177,7 +178,7 @@ async def get_image(image_path: str):
     except Exception as e:
         return JSONResponse(content={"error": str(e)}, status_code=500)
 
-@app.post("/analyze/combined/")
+@app.post("/analyze/3-combined/")
 async def analyze_combined(file: UploadFile = File(...)):
     """
     Analyse une image avec OpenCV (flou), NIMA (qualité esthétique) et LIQE (qualité technique).
@@ -194,7 +195,7 @@ async def analyze_combined(file: UploadFile = File(...)):
 
         blur_result = detect_blur(temp_path)
         blur_score = blur_result[1] * 100
-        clarity = "Net" if blur_score >= 50 else "Flou"
+        clarity = "Flou" if blur_score >= 50 else "Net"
 
         nima_model = PYIQA_INSTANCES["NIMA (VGG16-AVA)"]
         nima_score = nima_model(image).item()
@@ -223,7 +224,7 @@ async def analyze_combined(file: UploadFile = File(...)):
     except Exception as e:
         return JSONResponse(content={"error": str(e)}, status_code=500)
 
-@app.post("/analyze/with-gpt/")
+@app.post("/analyze/4-combined/")
 async def analyze_with_gpt(file: UploadFile = File(...), image_url: str = Form(...)):
     """
     Analyse une image avec OpenCV, NIMA et LIQE puis envoie l'analyse combinée à GPT-4o.
@@ -235,16 +236,20 @@ async def analyze_with_gpt(file: UploadFile = File(...), image_url: str = Form(.
         image = image.resize((1024, 1024))
         image.save(temp_path)
 
-        valid, error_msg = validate_image(temp_path)
-        if not valid:
-            return JSONResponse(content={"error": error_msg}, status_code=400)
-
         clarity, blur_raw_score = detect_blur(temp_path)
         blur_score = (1 - blur_raw_score) * 100 
 
         nima_model = PYIQA_INSTANCES["NIMA (VGG16-AVA)"]
         nima_score = nima_model(image).item()
-        nima_quality = "Bonne qualité esthétique 👍" if nima_score >= 5 else "Mauvaise qualité esthétique 👎"
+
+        if nima_score >= 6:
+            nima_quality = "Excellente qualité esthétique ⭐⭐⭐"
+        elif 5 <= nima_score < 6:
+            nima_quality = "Bonne qualité esthétique 👍"
+        elif 3 <= nima_score < 5:
+            nima_quality = "Qualité esthétique moyenne 🤔"
+        else:
+            nima_quality = "Mauvaise qualité esthétique 👎"
 
         liqe_model = PYIQA_INSTANCES["LIQE (No-Reference)"]
         liqe_score = liqe_model(image).item()
@@ -264,7 +269,6 @@ async def analyze_with_gpt(file: UploadFile = File(...), image_url: str = Form(.
                 "esthetic_quality": nima_quality,
                 "technical_quality": liqe_quality
             },
-            "global_quality_score": f"{quality_score:.2f}%"
         }
 
         prompt = f"""
@@ -277,12 +281,11 @@ async def analyze_with_gpt(file: UploadFile = File(...), image_url: str = Form(.
         - **Clarté** : {combined_analysis['evaluation']['clarity']}
         - **Qualité esthétique** : {combined_analysis['evaluation']['esthetic_quality']}
         - **Qualité technique** : {combined_analysis['evaluation']['technical_quality']}
-        - **Score global** : {combined_analysis['global_quality_score']}
 
         🔍 **Analyse finale** :
-        Compare cette analyse avec l’image fournie et donne une évaluation détaillée.  
+        Compare cette analyse avec l’image fournie et donne une évaluation détaillée.
         Propose des suggestions d'amélioration (ex : éclairage, composition, etc.).
-        Note l’image sur 100 en prenant en compte tous ces critères.
+        **Note l’image sur 100** en prenant en compte tous ces critères et donne la note sous la forme "Score final : XX/100".
         """
 
         response = openai_client.chat.completions.create(
@@ -299,10 +302,14 @@ async def analyze_with_gpt(file: UploadFile = File(...), image_url: str = Form(.
 
         gpt_analysis = response.choices[0].message.content
 
+        score_match = re.search(r"Score final\s*:\s*(\d+)/100", gpt_analysis)
+        gpt_final_score = int(score_match.group(1)) if score_match else None
+
         return {
             "method": "GPT-4o Image Analysis",
             "gpt_analysis": gpt_analysis,
-            "combined_scores": combined_analysis
+            "combined_scores": combined_analysis,
+            "gpt_final_score": gpt_final_score if gpt_final_score is not None else "Score non détecté"
         }
 
     except Exception as e:
