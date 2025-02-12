@@ -80,15 +80,18 @@ docker-compose down
 ### **📸 Module 1 : Analyse avec OpenCV**
 - Détection du **flou**
 - Calcul d'un **score de qualité visuelle**
+- Méthode blur **laplacienne**
 
 ### **🌟 Module 2 : NIMA (Neural Image Assessment)**
 - Évaluation de la **qualité esthétique** des photos
 - Bonne qualité si **≥ 5**
+- Lien détail : [Modèle NIMA - Neural IMage Assessment](https://github.com/yunxiaoshi/Neural-IMage-Assessment)
 
 ### **🔧 Module 3 : LIQE (Qualité Technique)**
 - Analyse de la **qualité technique de l'image**
 - Détection de **défauts visuels** sans référence
 - Bonne qualité si **≥ 5**
+- Lien détail : [Modèle LIQE - Vision-Language Correspondence](https://github.com/zwx8981/LIQE)
 
 ### **🤖 Module 4 : Analyse IA avec GPT-4o (OpenAI)**
 - Analyse avancée basée sur l'**intelligence artificielle**

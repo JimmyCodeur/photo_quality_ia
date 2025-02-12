@@ -53,6 +53,7 @@ if module in ["Module 1 - OpenCV", "Module 2 - NIMA (esthétique)", "Module 3 - 
             img_buffer = io.BytesIO()
             image.convert("RGB").save(img_buffer, format="JPEG", quality=100)
             image_bytes = img_buffer.getvalue()
+            st.image(image, caption="🖼️ Image téléversée", use_container_width=True)
         except UnidentifiedImageError:
             st.error("❌ Erreur : L'image téléversée est invalide ou corrompue.")
 
@@ -62,15 +63,25 @@ if module in ["Module 1 - OpenCV", "Module 2 - NIMA (esthétique)", "Module 3 - 
         else:
             with st.spinner("🔎 Analyse en cours..."):
                 files = {"file": ("image.jpg", image_bytes, "image/jpeg")}
-                endpoint = "/analyze/opencv/" if module == "Module 1 - OpenCV" else "/analyze/nima/" if module == "Module 2 - NIMA" else "/analyze/liqe/"
+                endpoint = "/analyze/opencv/" if module == "Module 1 - OpenCV" else "/analyze/nima/" if module == "Module 2 - NIMA (esthétique)" else "/analyze/liqe/"
                 response = requests.post(f"{BACKEND_URL}{endpoint}", files=files)
 
                 if response.status_code == 200:
                     result = response.json()
                     st.success("✅ Analyse réussie !")
+
                     st.write("📊 **Données API reçues :**", result)
+
+                    if module == "Module 2 - NIMA (esthétique)":
+                        nima_score = float(result.get("score", 0))
+                        if nima_score >= 5:
+                            st.markdown("✅ **L'image a une bonne qualité esthétique (score ≥ 5)** 🟢")
+                        else:
+                            st.markdown("⚠️ **L'image a une mauvaise qualité esthétique (score < 5)** 🔴")
+
                 else:
                     st.error(f"❌ Erreur lors de l'analyse : {response.status_code}")
+
 
 # ===================================================
 # 🔵 MODULE 4 - ANALYSE PAR URL UNIQUEMENT
@@ -107,6 +118,16 @@ elif module == "Module 4 - GPT":
 # 🔵 MODULE 5 - ANALYSE COMBINÉE AVEC URL & UPLOAD
 # ===================================================
 elif module == "Module 5 - Analyse Combinée":
+
+    MEMORIZED_IMAGES = {
+        "Statue De La Liberté": "https://i.postimg.cc/0yXGbvM7/a5e07ffa35.jpg",
+        "Tour Eiffel": "https://i.postimg.cc/Cxt8KxBD/tower-103417-1280.jpg"
+    }
+
+    st.markdown("### 📌 Images mémorisées (à titre informatif)")
+    for name, url in MEMORIZED_IMAGES.items():
+        st.markdown(f"🔗 **{name}** : [{url}]({url})")
+        
     st.markdown("<h2 style='color: #007BFF;'>📂 Analyse combinée avec image téléversée + URL</h2>", unsafe_allow_html=True)
 
     uploaded_file_5 = st.file_uploader("📤 Téléversez une image :", type=["jpg", "jpeg", "png"])

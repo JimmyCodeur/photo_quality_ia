@@ -24,6 +24,10 @@ PYIQA_INSTANCES = {name: load_pyiqa_model(model) for name, model in PYIQA_MODELS
 
 app = FastAPI()
 
+@app.get("/")
+def read_root():
+    return {"message": "Backend en ligne via Ngrok"}
+
 @app.get("/models/")
 async def get_models():
     """Récupère la liste des modèles disponibles."""
@@ -145,7 +149,7 @@ async def analyze_gpt4o(image_url: str = Form(...)):
         gpt_analysis = response.choices[0].message.content
 
         return {
-            "method": "gpt-4o-mini",
+            "method": "gpt-4o",
             "final_analysis": gpt_analysis
         }
 
@@ -283,13 +287,12 @@ async def analyze_with_gpt(file: UploadFile = File(...), image_url: str = Form(.
         - **Qualité technique** : {combined_analysis['evaluation']['technical_quality']}
 
         🔍 **Analyse finale** :
-        Compare cette analyse avec l’image fournie et donne une évaluation détaillée.
-        Propose des suggestions d'amélioration (ex : éclairage, composition, etc.).
+        Donne ton analyse sur l'image et donne lui une note.
         **Note l’image sur 100** en prenant en compte tous ces critères et donne la note sous la forme "Score final : XX/100".
         """
 
         response = openai_client.chat.completions.create(
-            model="gpt",
+            model="gpt-4o",
             messages=[
                 {"role": "system", "content": "Tu es un expert en analyse d'images et en qualité visuelle."},
                 {"role": "user", "content": [
@@ -304,6 +307,8 @@ async def analyze_with_gpt(file: UploadFile = File(...), image_url: str = Form(.
 
         score_match = re.search(r"Score final\s*:\s*(\d+)/100", gpt_analysis)
         gpt_final_score = int(score_match.group(1)) if score_match else None
+
+        os.remove(temp_path)
 
         return {
             "method": "GPT-4o Image Analysis",
