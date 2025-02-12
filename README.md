@@ -86,12 +86,56 @@ docker-compose down
 - Évaluation de la **qualité esthétique** des photos
 - Bonne qualité si **≥ 5**
 - Lien détail : [Modèle NIMA - Neural IMage Assessment](https://github.com/yunxiaoshi/Neural-IMage-Assessment)
+- **Critères évalués par NIMA** :
+  
+  1️⃣ **Composition**  
+  - Respect de la règle des tiers : l’image est-elle bien équilibrée ?
+  - Placement du sujet : est-il bien positionné ?
+  - Symétrie et alignement des éléments.
+  
+  2️⃣ **Luminosité et Exposition**  
+  - L’image est-elle bien exposée (ni trop sombre, ni trop lumineuse) ?
+  - Gestion des ombres et des hautes lumières.
+  
+  3️⃣ **Couleurs et Harmonie Chromatique**  
+  - L’image utilise-t-elle une bonne palette de couleurs ?
+  - Y a-t-il un bon contraste sans sur-saturation des couleurs ?
+  
+  4️⃣ **Profondeur de champ**  
+  - Effet de flou d’arrière-plan bien contrôlé (bokeh).
+  - Mise au point nette sur le sujet principal.
+  
+  5️⃣ **Émotion et Impact Visuel**  
+  - L’image transmet-elle une émotion ou une ambiance forte ?
+  - Engage-t-elle visuellement l’observateur ?
 
 ### **🔧 Module 3 : LIQE (Qualité Technique)**
 - Analyse de la **qualité technique de l'image**
 - Détection de **défauts visuels** sans référence
 - Bonne qualité si **≥ 5**
 - Lien détail : [Modèle LIQE - Vision-Language Correspondence](https://github.com/zwx8981/LIQE)
+- **Critères évalués par LIQE** :
+  
+  1️⃣ **Netteté et Détails**  
+  - L’image est-elle suffisamment nette ?
+  - Présence de détails fins ou de textures bien définies.
+  - Pas de flou excessif ni de lissage numérique.
+  
+  2️⃣ **Bruit Numérique et Artéfacts**  
+  - Présence de grain excessif, surtout dans les zones sombres.
+  - Compression JPEG visible (blocs, pixels anormaux).
+  
+  3️⃣ **Contraste et Dynamique**  
+  - L’image a-t-elle un bon contraste naturel ?
+  - Plage dynamique bien exploitée (pas de zones totalement brûlées ou bouchées).
+  
+  4️⃣ **Distorsion et Aberration Chromatique**  
+  - Pas de distorsion optique ou d’effets de "fish-eye".
+  - Pas d’artefacts colorés en bordure des objets.
+  
+  5️⃣ **Balance des Blancs et Fidélité des Couleurs**  
+  - Les couleurs sont-elles naturelles et bien restituées ?
+  - Pas de dominante de couleur indésirable.
 
 ### **🤖 Module 4 : Analyse IA avec GPT-4o (OpenAI)**
 - Analyse avancée basée sur l'**intelligence artificielle**
