@@ -83,9 +83,9 @@ if module in ["Module 1 - OpenCV", "Module 2 - NIMA (esthétique)", "Module 3 - 
                     st.error(f"❌ Erreur lors de l'analyse : {response.status_code}")
 
 
-# ===================================================
+# ====================================================
 # 🔵 MODULE 4 - ANALYSE PAR URL UNIQUEMENT
-# ===================================================
+# ====================================================
 elif module == "Module 4 - GPT":
     st.markdown("<h2 style='color: #007BFF;'>🌍 Analyse basée sur une URL d'image</h2>", unsafe_allow_html=True)
 
