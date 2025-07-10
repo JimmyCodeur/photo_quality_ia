@@ -2,6 +2,10 @@
 
 Ce projet est un système permettant d'évaluer automatiquement la qualité des photos en analysant différents critères avec IA.
 
+## 🖼️ Aperçu de l’application
+
+![Aperçu de l’application](Image_app.png)
+
 ## 🚀 **Fonctionnalités**
 - 🎨 **Upload d'images** via une interface **Streamlit**
 - 🌟 **Analyse automatique** de la qualité des images avec **FastAPI**
