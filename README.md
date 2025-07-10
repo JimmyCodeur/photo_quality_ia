@@ -26,7 +26,9 @@ photo_quality_ai/
 │   │   ├── image_analysis.py    
 │   │   ├── requirements.txt
 │   │   ├── encode_image.py
+│   ├── data/img
 │   ├── Dockerfile
+│   ├──.env
 ├── frontend/          
 │   ├── app.py
 │   ├── requirements.txt
@@ -46,7 +48,7 @@ photo_quality_ai/
 - **Python 3.10+** si vous exécutez sans Docker
 
 ### 🗝️ **Configurer les variables d'environnement**
-Copiez le fichier `.env.example` en `.env` dans le dossier `backend/` puis renseignez votre clé OpenAI :
+Copiez le fichier `.env.example` en `.env` dans le dossier `backend/` puis renseignez votre clé OpenAI API
 
 ### 🔧 **Lancer l'application avec Docker**
 Dans le terminal, exécutez :
@@ -178,5 +180,5 @@ Ce projet est sous licence MIT - voir le fichier [LICENSE](LICENSE) pour plus de
 
 ---
 
-🚀 **Créé avec ❤️ par Jimmy** 🎉
+🚀 **Créé avec ❤️ par JimmyCodeur** 🎉
 
