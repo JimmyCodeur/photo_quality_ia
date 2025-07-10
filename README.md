@@ -1,6 +1,6 @@
-# 📷 **Système d'Analyse de Qualité des Photos de Monuments**
+# 📷 **PoC - Système d'Analyse de Qualité des Photos**
 
-Ce projet est un système permettant d'évaluer automatiquement la qualité des photos de monuments en analysant différents critères avec IA.
+Ce projet est un système permettant d'évaluer automatiquement la qualité des photos en analysant différents critères avec IA.
 
 ## 🚀 **Fonctionnalités**
 - 🎨 **Upload d'images** via une interface **Streamlit**
@@ -44,6 +44,9 @@ photo_quality_ai/
 ### 📺 **Prérequis**
 - [Docker](https://www.docker.com/) et [Docker Compose](https://docs.docker.com/compose/)
 - **Python 3.10+** si vous exécutez sans Docker
+
+### 🗝️ **Configurer les variables d'environnement**
+Copiez le fichier `.env.example` en `.env` dans le dossier `backend/` puis renseignez votre clé OpenAI :
 
 ### 🔧 **Lancer l'application avec Docker**
 Dans le terminal, exécutez :

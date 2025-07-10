@@ -1,7 +1,11 @@
 import pyiqa
 import torch
+from dotenv import load_dotenv
+import os
 
-OPENAI_API_KEY = "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"
+load_dotenv()
+
+OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 
 PYIQA_MODELS = {
     "NIMA (VGG16-AVA)": "nima-vgg16-ava",
