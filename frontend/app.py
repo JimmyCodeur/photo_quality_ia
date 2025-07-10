@@ -90,8 +90,7 @@ elif module == "Module 4 - GPT":
     st.markdown("<h2 style='color: #007BFF;'>🌍 Analyse basée sur une URL d'image</h2>", unsafe_allow_html=True)
 
     MEMORIZED_IMAGES = {
-        "Statue De La Liberté": "https://i.postimg.cc/0yXGbvM7/a5e07ffa35.jpg",
-        "Tour Eiffel": "https://i.postimg.cc/Cxt8KxBD/tower-103417-1280.jpg"
+        "Tour Eiffel": "https://i.postimg.cc/yx8ppJgM/eiffel-tower-975004-1280.jpg"
     }
 
     st.markdown("### 📌 Images mémorisées (à titre informatif)")
@@ -120,8 +119,7 @@ elif module == "Module 4 - GPT":
 elif module == "Module 5 - Analyse Combinée":
 
     MEMORIZED_IMAGES = {
-        "Statue De La Liberté": "https://i.postimg.cc/0yXGbvM7/a5e07ffa35.jpg",
-        "Tour Eiffel": "https://i.postimg.cc/Cxt8KxBD/tower-103417-1280.jpg"
+        "Tour Eiffel": "https://i.postimg.cc/yx8ppJgM/eiffel-tower-975004-1280.jpg"
     }
 
     st.markdown("### 📌 Images mémorisées (à titre informatif)")
